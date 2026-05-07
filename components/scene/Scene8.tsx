@@ -5,43 +5,46 @@ import { Canvas } from "@react-three/fiber"
 import { OrbitControls, Environment, Float, Sparkles } from "@react-three/drei"
 import gsap from "gsap"
 import * as THREE from "three"
+import { ThreeEvent } from "@react-three/fiber"
 
 // --- Komponen 3D Kue & Teka-teki Lilin ---
-function CakeAndCandle({ onCandleExtinguished }) {
-  const flameRef = useRef()
-  const lightRef = useRef()
-  const magicWindRef = useRef()
+function CakeAndCandle({ onCandleExtinguished }: { onCandleExtinguished: () => void }) {
+  const flameRef = useRef<THREE.Mesh>(null)
+  const lightRef = useRef<THREE.PointLight>(null)
+  const magicWindRef = useRef<THREE.Mesh>(null)
   
   const [isLit, setIsLit] = useState(true)
   const [isAnimating, setIsAnimating] = useState(false)
 
-  const handleBlowCandle = (e) => {
+  const handleBlowCandle = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation()
     if (!isLit || isAnimating) return
     setIsAnimating(true)
 
     // Animasi: Bola Angin Ajaib terbang mendekati lilin
-    gsap.to(magicWindRef.current.position, {
-      x: 0,
-      y: 1.5,
-      z: 0,
-      duration: 1,
-      ease: "power2.inOut",
-      onComplete: () => {
-        // Matikan Api & Lampu Lilin
-        setIsLit(false)
-        gsap.to(flameRef.current.scale, { x: 0, y: 0, z: 0, duration: 0.3 })
-        gsap.to(lightRef.current, { intensity: 0, duration: 0.3 })
-        
-        // Hilangkan Bola Angin Ajaibnya
-        gsap.to(magicWindRef.current.scale, { x: 0, y: 0, z: 0, duration: 0.3 })
+    if (magicWindRef.current && flameRef.current && lightRef.current) {
+      gsap.to(magicWindRef.current.position, {
+        x: 0,
+        y: 1.5,
+        z: 0,
+        duration: 1,
+        ease: "power2.inOut",
+        onComplete: () => {
+          // Matikan Api & Lampu Lilin
+          setIsLit(false)
+          gsap.to(flameRef.current!.scale, { x: 0, y: 0, z: 0, duration: 0.3 })
+          gsap.to(lightRef.current, { intensity: 0, duration: 0.3 })
+          
+          // Hilangkan Bola Angin Ajaibnya
+          gsap.to(magicWindRef.current!.scale, { x: 0, y: 0, z: 0, duration: 0.3 })
 
-        // Beri tahu parent component (Scene 8) kalau lilin udah mati setelah delay dikit
-        setTimeout(() => {
-          onCandleExtinguished()
-        }, 1000)
-      }
-    })
+          // Beri tahu parent component (Scene 8) kalau lilin udah mati setelah delay dikit
+          setTimeout(() => {
+            onCandleExtinguished()
+          }, 1000)
+        }
+      })
+    }
   }
 
   return (
@@ -79,7 +82,6 @@ function CakeAndCandle({ onCandleExtinguished }) {
           ref={magicWindRef} 
           position={[0, 1, -3]} 
           onClick={handleBlowCandle}
-          className="cursor-pointer"
         >
           <sphereGeometry args={[0.2, 32, 32]} />
           <meshStandardMaterial color="#7dd3fc" emissive="#38bdf8" emissiveIntensity={2} />
@@ -128,7 +130,7 @@ export default function Scene8() {
       <div className="absolute inset-0 z-0">
         <Canvas shadows camera={{ position: [0, 2, 6], fov: 45 }}>
           {/* Kalau lilin mati, lampu ruangan (ambient) ikut meredup biar romantis */}
-          <ambientLight intensity={candleOff ? 0.2 : 0.6} transition="all 1s" />
+          <ambientLight intensity={candleOff ? 0.2 : 0.6} />
           <Environment preset={candleOff ? "night" : "sunset"} />
           
           <CakeAndCandle onCandleExtinguished={() => setCandleOff(true)} />

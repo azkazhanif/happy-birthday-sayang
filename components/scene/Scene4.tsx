@@ -1,38 +1,123 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
 import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useSceneContext } from "@/contexts/SceneContext"
+import { poppins } from "@/lib/font"
 
 export default function Scene4() {
   // State untuk masing-masing bagian tanggal
   const [datePart, setDatePart] = useState({ dd: "", mm: "", yyyy: "" })
   const [status, setStatus] = useState("idle") // 'idle' | 'error' | 'success'
   
-  const containerRef = useRef(null)
-  const chatRef = useRef(null)
-  const inputCardRef = useRef(null)
+  const { unlockScene, isSceneUnlocked } = useSceneContext()
+  const [isUnlocked, setIsUnlocked] = useState(false)
+  
+  const containerRef = useRef<HTMLDivElement>(null)
+  const imageWrapperRef = useRef<HTMLDivElement>(null)
+  const inputCardRef = useRef<HTMLDivElement>(null)
+  const lockIndicatorRef = useRef<HTMLDivElement>(null)
+  const unlockIndicatorRef = useRef<HTMLDivElement>(null)
   
   // Refs untuk auto-focus input
-  const mmRef = useRef(null)
-  const yyyyRef = useRef(null)
+  const mmRef = useRef<HTMLInputElement>(null)
+  const yyyyRef = useRef<HTMLInputElement>(null)
 
   const correctDate = { dd: "12", mm: "08", yyyy: "2022" }
 
   useEffect(() => {
+    if (isSceneUnlocked(4)) {
+      setIsUnlocked(true)
+      setStatus("success")
+    }
+  }, [isSceneUnlocked])
+
+  useEffect(() => {
+    if (isUnlocked) return
+
+    const handleWheel = (e: WheelEvent) => {
+      const scene = containerRef.current
+      if (!scene) return
+      const rect = scene.getBoundingClientRect()
+      
+      if (rect.bottom <= window.innerHeight + 10 && e.deltaY > 0) {
+        e.preventDefault()
+      }
+    }
+
+    let touchStartY = 0
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY
+    }
+    const handleTouchMove = (e: TouchEvent) => {
+      const scene = containerRef.current
+      if (!scene) return
+      const rect = scene.getBoundingClientRect()
+      const touchY = e.touches[0].clientY
+      const deltaY = touchStartY - touchY
+      
+      if (rect.bottom <= window.innerHeight + 10 && deltaY > 0) {
+        e.preventDefault()
+      }
+    }
+
+    window.addEventListener("wheel", handleWheel, { passive: false })
+    window.addEventListener("touchstart", handleTouchStart, { passive: true })
+    window.addEventListener("touchmove", handleTouchMove, { passive: false })
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel)
+      window.removeEventListener("touchstart", handleTouchStart)
+      window.removeEventListener("touchmove", handleTouchMove)
+    }
+  }, [isUnlocked])
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
     const ctx = gsap.context(() => {
-      // Animasi masuk barengan tapi beda arah
-      gsap.from(".animate-title", { y: -30, opacity: 0, duration: 1, ease: "back.out" })
-      
-      gsap.from(chatRef.current, { 
-        x: -100, opacity: 0, duration: 1, delay: 0.2, ease: "power3.out" 
-      })
-      
-      gsap.from(inputCardRef.current, { 
-        x: 100, opacity: 0, duration: 1, delay: 0.4, ease: "power3.out" 
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+          end: "top 20%",
+          toggleActions: "play none none reverse",
+        }
       })
 
-      gsap.from(".chat-bubble", {
-        opacity: 0, scale: 0.5, x: -20, stagger: 0.3, delay: 0.8, ease: "back.out"
+      tl.from(".animate-title", { 
+        y: 50, 
+        opacity: 0, 
+        duration: 1, 
+        ease: "back.out(1.5)" 
+      })
+      
+      tl.from(imageWrapperRef.current, { 
+        x: -100, 
+        rotation: -10,
+        opacity: 0, 
+        duration: 1.2, 
+        ease: "power3.out" 
+      }, "-=0.6")
+      
+      tl.from(inputCardRef.current, { 
+        x: 100, 
+        rotation: 10,
+        opacity: 0, 
+        duration: 1.2, 
+        ease: "power3.out" 
+      }, "-=1")
+
+      gsap.to(".parallax-img", {
+        y: -30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        }
       })
     }, containerRef)
     return () => ctx.revert()
@@ -41,7 +126,7 @@ export default function Scene4() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     part: "dd" | "mm" | "yyyy",
-    nextRef: React.RefObject<HTMLInputElement> | null
+    nextRef: React.RefObject<HTMLInputElement | null> | null
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "") // Hanya angka
     const maxLength = part === "yyyy" ? 4 : 2
@@ -61,7 +146,13 @@ export default function Scene4() {
       datePart.yyyy === correctDate.yyyy
     ) {
       setStatus("success")
+      setIsUnlocked(true)
+      unlockScene(4)
       gsap.to(".confetti-dummy", { opacity: 1, scale: 1.2, duration: 0.5 })
+      gsap.fromTo(unlockIndicatorRef.current, 
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "back.out(2)" }
+      )
     } else {
       setStatus("error")
       gsap.to(inputCardRef.current, {
@@ -89,22 +180,18 @@ export default function Scene4() {
       {/* Grid Cols 2 Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full items-center">
         
-        {/* Kolom Kiri: Chat Card */}
-        <div ref={chatRef} className="bg-[#efe7de] p-6 rounded-[2.5rem] shadow-2xl border-4 border-white relative">
-          <div className="bg-[#d9c7b5] rounded-2xl px-4 py-3 mb-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center text-white shadow-md">
-              👧🏻
-            </div>
-            <span className="font-bold text-gray-800">My Lovely Girl</span>
+        {/* Kolom Kiri: Image */}
+        <div ref={imageWrapperRef} className="relative z-10 p-4 bg-white rounded-2xl shadow-xl transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500">
+          <div className="overflow-hidden rounded-xl bg-gray-200 aspect-[4/5] relative">
+            <Image 
+              src="/images/mine/4.jpeg" 
+              alt="Our moment" 
+              fill
+              className="object-cover parallax-img scale-110"
+            />
           </div>
-
-          <div className="space-y-4">
-            <div className="chat-bubble bg-white p-3 rounded-2xl rounded-tl-none w-fit shadow-sm text-gray-700">
-              "Hai, inget gak kita pertama chat kapan?" 💌
-            </div>
-            <div className="chat-bubble bg-[#dcf8c6] p-3 rounded-2xl rounded-tr-none w-fit ml-auto shadow-sm text-gray-800">
-              "Hmm, tanggal berapa yaaa..." 🤔
-            </div>
+          <div className={`text-center mt-4 text-pink-500 font-medium ${poppins.className}`}>
+            Do you remember? 💕
           </div>
         </div>
 
@@ -165,6 +252,28 @@ export default function Scene4() {
           )}
         </div>
       </div>
+
+      {/* Lock indicator */}
+      {!isUnlocked && (
+        <div
+          ref={lockIndicatorRef}
+          className="mt-12 flex items-center gap-2 text-pink-400/70 text-sm"
+        >
+          <span>🔒</span>
+          <span className={poppins.className}>Inget-inget dulu ya sayang, baru bisa lanjut~</span>
+        </div>
+      )}
+
+      {/* Unlock success indicator */}
+      {isUnlocked && (
+        <div
+          ref={unlockIndicatorRef}
+          className="mt-12 flex items-center gap-2 text-pink-500 text-sm font-medium"
+        >
+          <span>🔓</span>
+          <span className={poppins.className}>Silahkan scroll ke bawah sayang~ 💕</span>
+        </div>
+      )}
     </section>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import gsap from "gsap"
+import confetti from "canvas-confetti"
 
 // --- Data Pertanyaan Kuis ---
 const questions = [
@@ -36,6 +37,54 @@ const questions = [
     correct: "A",
     feedbackRight: "Betul calf laaa ☕✨",
     feedbackWrong: "Yahh salah, Calf garis keras nih bos! 😤"
+  },
+  {
+    question: "Siapa yang biasanya lebih dulu ngambek? 😤",
+    optionA: "Aku (Azka)",
+    optionB: "Kamu (Tiara)",
+    correct: "B",
+    feedbackRight: "Nah bener wkwk, tukang ngambek tapi tetep gemesin 🥰",
+    feedbackWrong: "Dih mana ada, kamu lah yang lebih sering ngambek! 😝"
+  },
+  {
+    question: "Kalo lagi bad mood, paling suka dibujuk pake apa? 🍫",
+    optionA: "Dibelai & dicium",
+    optionB: "Dikasih makanan enak",
+    correct: "B",
+    feedbackRight: "Valid! Makanan is the key to your heart 🍕💖",
+    feedbackWrong: "Bohong banget! Kamu mah kalo dikasih makanan langsung luluh 😂"
+  },
+  {
+    question: "Liburan impian kita berdua? ✈️",
+    optionA: "Jepang",
+    optionB: "Bali",
+    correct: "A",
+    feedbackRight: "Benerrr, semoga kita bisa secepatnya ke Jepang bareng yaa! 🌸🎌",
+    feedbackWrong: "Bali juga enak sih, tapi impian utama kita kan Jepang! 🥺"
+  },
+  {
+    question: "Hal yang paling bikin aku salting gara-gara kamu? 🫣",
+    optionA: "Kalo kamu tiba-tiba manjain",
+    optionB: "Kalo kamu ngirimin foto senyum manismu",
+    correct: "B",
+    feedbackRight: "Bener! Senyum kamu tuh ga ada obatnya tauuu 💘",
+    feedbackWrong: "Itu bikin salting juga sih, tapi liat senyum kamu tuh level salting maksimal! 😍"
+  },
+  {
+    question: "Sifat kamu yang paling aku suka? ✨",
+    optionA: "Care & perhatian banget",
+    optionB: "Cerewet & bawel",
+    correct: "A",
+    feedbackRight: "Tentu aja! Makasih ya selalu perhatian sama aku 🤗",
+    feedbackWrong: "Cerewet emang gemes, tapi perhatian kamu tuh nomor satu! 🥰"
+  },
+  {
+    question: "Seberapa besar rasa sayangku ke kamu? 🥺",
+    optionA: "Biasa aja",
+    optionB: "Tak Terhingga ♾️",
+    correct: "B",
+    feedbackRight: "YES! Nggak bisa diukur saking besarnya ❤️❤️❤️",
+    feedbackWrong: "JAHAT BANGET KALO JAWAB BIASA AJA 😭😭"
   }
 ]
 
@@ -45,6 +94,7 @@ export default function Scene6() {
   const [timeLeft, setTimeLeft] = useState(10)
   const [feedbackMsg, setFeedbackMsg] = useState("")
   const [isRight, setIsRight] = useState(false)
+  const [score, setScore] = useState(0)
 
   const containerRef = useRef(null)
   const timerBarRef = useRef(null)
@@ -52,7 +102,7 @@ export default function Scene6() {
 
   // Timer Logic
   useEffect(() => {
-    let timer
+    let timer: NodeJS.Timeout
     if (gameState === "playing" && timeLeft > 0) {
       timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000)
     } else if (gameState === "playing" && timeLeft === 0) {
@@ -103,9 +153,11 @@ export default function Scene6() {
   const startGame = () => {
     setGameState("playing")
     setTimeLeft(10)
+    setScore(0)
+    setCurrentIndex(0)
   }
 
-  const handleAnswer = (selectedOption) => {
+  const handleAnswer = (selectedOption: string) => {
     setGameState("feedback")
     gsap.killTweensOf(timerBarRef.current) 
 
@@ -114,9 +166,26 @@ export default function Scene6() {
     if (selectedOption === currentQ.correct) {
       setIsRight(true)
       setFeedbackMsg(currentQ.feedbackRight)
+      setScore(prev => prev + 1)
+      
+      // Confetti Effect for right answer
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#f472b6', '#fbcfe8', '#fb7185', '#ffffff']
+      })
     } else {
       setIsRight(false)
       setFeedbackMsg(selectedOption === "TIMEOUT" ? "Waktu habiiis! Kelamaan mikir nih 😝" : currentQ.feedbackWrong)
+      
+      // Screen Shake Effect for wrong answer
+      gsap.fromTo(qCardRef.current, 
+        { x: -10 }, 
+        { x: 10, duration: 0.1, yoyo: true, repeat: 5, ease: "sine.inOut" }
+      ).then(() => {
+        gsap.to(qCardRef.current, { x: 0, duration: 0.1 })
+      })
     }
 
     gsap.fromTo(".feedback-popup", 
@@ -136,6 +205,12 @@ export default function Scene6() {
         )
       } else {
         setGameState("finished")
+        // Big confetti for finishing!
+        confetti({
+          particleCount: 300,
+          spread: 120,
+          origin: { y: 0.5 }
+        })
       }
     }, 3000)
   }
@@ -151,8 +226,7 @@ export default function Scene6() {
       {/* Polaroid Kiri Atas */}
       <div className="polaroid-card hidden md:block absolute top-16 left-10 lg:left-20 bg-white p-3 pb-10 shadow-xl border border-gray-200 -rotate-6 w-40 lg:w-48 z-0">
         <div className="w-full aspect-square bg-gray-200 overflow-hidden">
-          {/* Ganti src dengan nama file fotomu */}
-          <img src="/foto1.jpg" alt="Foto 1" className="w-full h-full object-cover" /> 
+          <img src="/images/mine/1.jpeg" alt="Foto 1" className="w-full h-full object-cover" /> 
         </div>
         <p className="text-center text-gray-500 font-handwriting mt-3 text-sm">Cute bgt! 💕</p>
       </div>
@@ -160,14 +234,14 @@ export default function Scene6() {
       {/* Polaroid Kiri Bawah */}
       <div className="polaroid-card hidden md:block absolute bottom-20 left-16 lg:left-32 bg-white p-3 pb-10 shadow-xl border border-gray-200 rotate-12 w-40 lg:w-48 z-0">
         <div className="w-full aspect-square bg-gray-200 overflow-hidden">
-          <img src="/foto2.jpg" alt="Foto 2" className="w-full h-full object-cover" />
+          <img src="/images/mine/2.jpeg" alt="Foto 2" className="w-full h-full object-cover" />
         </div>
       </div>
 
       {/* Polaroid Kanan Atas */}
       <div className="polaroid-card hidden md:block absolute top-24 right-12 lg:right-24 bg-white p-3 pb-10 shadow-xl border border-gray-200 rotate-6 w-40 lg:w-48 z-0">
         <div className="w-full aspect-square bg-gray-200 overflow-hidden">
-          <img src="/foto3.jpg" alt="Foto 3" className="w-full h-full object-cover" />
+          <img src="/images/mine/3.jpeg" alt="Foto 3" className="w-full h-full object-cover" />
         </div>
         <p className="text-center text-gray-500 font-handwriting mt-3 text-sm">My fav! 🥰</p>
       </div>
@@ -175,7 +249,7 @@ export default function Scene6() {
       {/* Polaroid Kanan Bawah */}
       <div className="polaroid-card hidden md:block absolute bottom-24 right-10 lg:right-20 bg-white p-3 pb-10 shadow-xl border border-gray-200 -rotate-12 w-40 lg:w-48 z-0">
         <div className="w-full aspect-square bg-gray-200 overflow-hidden">
-          <img src="/foto4.jpg" alt="Foto 4" className="w-full h-full object-cover" />
+          <img src="/images/mine/4.jpeg" alt="Foto 4" className="w-full h-full object-cover" />
         </div>
       </div>
       {/* ========================================================= */}
@@ -220,14 +294,14 @@ export default function Scene6() {
                 <button 
                   onClick={() => handleAnswer("A")}
                   disabled={gameState === "feedback"}
-                  className="bg-[#efe7de] hover:bg-[#e2d3c3] text-gray-800 font-bold py-6 px-4 rounded-3xl text-xl shadow-md transition-all active:scale-95 border-2 border-[#d9c7b5]"
+                  className="bg-[#efe7de] hover:bg-[#e2d3c3] text-gray-800 font-bold py-6 px-4 rounded-3xl text-xl shadow-md transition-all active:scale-95 hover:scale-[1.02] border-2 border-[#d9c7b5]"
                 >
                   {questions[currentIndex].optionA}
                 </button>
                 <button 
                   onClick={() => handleAnswer("B")}
                   disabled={gameState === "feedback"}
-                  className="bg-[#efe7de] hover:bg-[#e2d3c3] text-gray-800 font-bold py-6 px-4 rounded-3xl text-xl shadow-md transition-all active:scale-95 border-2 border-[#d9c7b5]"
+                  className="bg-[#efe7de] hover:bg-[#e2d3c3] text-gray-800 font-bold py-6 px-4 rounded-3xl text-xl shadow-md transition-all active:scale-95 hover:scale-[1.02] border-2 border-[#d9c7b5]"
                 >
                   {questions[currentIndex].optionB}
                 </button>
@@ -255,10 +329,24 @@ export default function Scene6() {
             <h2 className="text-4xl font-bold text-pink-500 mb-4 drop-shadow-sm">
               Game Selesai! 🎉
             </h2>
-            <p className="text-gray-600 mb-8 text-lg">
-              Makasih ya udah main This or That! Ketahuan deh isi otaknya wkwkwk 😂
+            <div className="mb-6 p-6 bg-pink-50 rounded-2xl border-2 border-pink-100">
+              <p className="text-gray-500 text-lg mb-2">Skor Akhir Kamu</p>
+              <p className="text-5xl font-black text-pink-500">{score} <span className="text-2xl text-pink-300">/ 10</span></p>
+            </div>
+            <p className="text-gray-700 mb-8 text-lg font-medium">
+              {score >= 8 
+                ? "Wahhh kamu emang idaman banget, inget semuanya! Sayang banget deh 🥰" 
+                : score >= 5 
+                  ? "Lumayan lah ya, tapi masih banyak yang lupa nih wkwk 😜"
+                  : "Waduuuh, parah nih! Masa lupa banyak banget 😤"}
             </p>
-            <button className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform active:scale-95 transition-all">
+            <button 
+              onClick={() => {
+                // Biar bisa lanjut ke section berikutnya dengan smooth
+                window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })
+              }}
+              className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform active:scale-95 transition-all text-lg"
+            >
               Lanjut dong sayang 🥰
             </button>
           </div>

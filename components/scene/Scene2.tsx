@@ -289,7 +289,14 @@ const Scene2 = () => {
       // Shake animation on wrong answer
       if (modalContentRef.current) {
         gsap.to(modalContentRef.current, {
-          x: [-8, 8, -6, 6, -3, 3, 0],
+          keyframes: {
+            "0%": { x: 0 },
+            "20%": { x: -8 },
+            "40%": { x: 8 },
+            "60%": { x: -6 },
+            "80%": { x: 6 },
+            "100%": { x: 0 }
+          },
           duration: 0.5,
           ease: "power2.out",
         })

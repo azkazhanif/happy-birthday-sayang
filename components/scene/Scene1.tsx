@@ -30,10 +30,10 @@ const Scene1 = () => {
     if (hasAnimated.current) return
     hasAnimated.current = true
 
-    const introChars = introTextRef.current?.querySelectorAll('.intro-char')
-    const chars1 = text1Ref.current?.querySelectorAll('.char')
-    const chars2 = text2Ref.current?.querySelectorAll('.char')
-    const sparkles = introSparklesRef.current?.querySelectorAll('.sparkle')
+    const introChars = introTextRef.current ? Array.from(introTextRef.current.querySelectorAll('.intro-char')) : []
+    const chars1 = text1Ref.current ? Array.from(text1Ref.current.querySelectorAll('.char')) : []
+    const chars2 = text2Ref.current ? Array.from(text2Ref.current.querySelectorAll('.char')) : []
+    const sparkles = introSparklesRef.current ? Array.from(introSparklesRef.current.querySelectorAll('.sparkle')) : []
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
