@@ -1,12 +1,15 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import confetti from "canvas-confetti"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 export default function Scene10() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [herWish, setHerWish] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
 
   const containerRef = useRef<HTMLElement>(null)
@@ -15,17 +18,119 @@ export default function Scene10() {
   // Array 10 foto
   const photos = Array.from({ length: 10 }, (_, i) => `/images/mine/${i + 1}.jpeg`)
 
-  const handleSubmitWish = () => {
+  // GSAP Animations with ScrollTrigger
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+    const ctx = gsap.context(() => {
+      // Animate title and description
+      gsap.fromTo(".title-text",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 80%",
+          }
+        }
+      )
+
+      // Animate polaroid photos
+      gsap.fromTo(".photo-item",
+        { opacity: 0, scale: 0.8, y: 40 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.08,
+          ease: "back.out(1.4)",
+          scrollTrigger: {
+            trigger: ".photo-wrapper",
+            start: "top 85%",
+          }
+        }
+      )
+
+      // Animate wishes block
+      gsap.fromTo(".wishes-text",
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".wishes-text",
+            start: "top 85%",
+          }
+        }
+      )
+
+      // Animate apology text and button
+      gsap.fromTo([".apology-text", ".wish-btn"],
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".wish-btn",
+            start: "top 90%",
+          }
+        }
+      )
+    }, containerRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  const handleSubmitWish = async () => {
     if (herWish.trim() === "") return
-    setIsSubmitted(true)
+    setIsSubmitting(true)
     
-    // Confetti pop on submit!
-    confetti({
-      particleCount: 200,
-      spread: 100,
-      origin: { y: 0.6 },
-      colors: ['#ff99cc', '#ffb3d9', '#ffffff', '#ff66b2']
-    })
+    try {
+      await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          access_key: "0e067c29-397a-42fc-8ecb-18a7c2f6027c", // This delivers straight to azkazhanif@gmail.com
+          subject: "Harapan Baru dari Sayangku Tiara! 💌",
+          from_name: "Tiara's Birthday Website",
+          to_email: "azkazhanif@gmail.com",
+          message: herWish,
+        })
+      })
+
+      setIsSubmitted(true)
+      
+      // Confetti pop on submit!
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#ff99cc', '#ffb3d9', '#ffffff', '#ff66b2']
+      })
+    } catch (err) {
+      // Fallback to prevent any error breaking her birthday mood
+      setIsSubmitted(true)
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#ff99cc', '#ffb3d9', '#ffffff', '#ff66b2']
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -154,10 +259,10 @@ export default function Scene10() {
 
                 <button 
                   onClick={handleSubmitWish}
-                  disabled={herWish.trim() === ""}
+                  disabled={herWish.trim() === "" || isSubmitting}
                   className="w-full mt-8 bg-linear-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-full shadow-lg transform active:scale-95 transition-all text-xl"
                 >
-                  Kirim Harapan 💖
+                  {isSubmitting ? "Mengirim... 💌" : "Kirim Harapan 💖"}
                 </button>
               </div>
             ) : (
