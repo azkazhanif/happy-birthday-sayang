@@ -11,21 +11,21 @@ export default function Scene4() {
   // State untuk masing-masing bagian tanggal
   const [datePart, setDatePart] = useState({ dd: "", mm: "", yyyy: "" })
   const [status, setStatus] = useState("idle") // 'idle' | 'error' | 'success'
-  
+
   const { unlockScene, isSceneUnlocked } = useSceneContext()
   const [isUnlocked, setIsUnlocked] = useState(false)
-  
+
   const containerRef = useRef<HTMLDivElement>(null)
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const inputCardRef = useRef<HTMLDivElement>(null)
   const lockIndicatorRef = useRef<HTMLDivElement>(null)
   const unlockIndicatorRef = useRef<HTMLDivElement>(null)
-  
+
   // Refs untuk auto-focus input
   const mmRef = useRef<HTMLInputElement>(null)
   const yyyyRef = useRef<HTMLInputElement>(null)
 
-  const correctDate = { dd: "12", mm: "08", yyyy: "2022" }
+  const correctDate = { dd: "08", mm: "09", yyyy: "2024" }
 
   useEffect(() => {
     if (isSceneUnlocked(4)) {
@@ -41,7 +41,7 @@ export default function Scene4() {
       const scene = containerRef.current
       if (!scene) return
       const rect = scene.getBoundingClientRect()
-      
+
       if (rect.bottom <= window.innerHeight + 10 && e.deltaY > 0) {
         e.preventDefault()
       }
@@ -57,7 +57,7 @@ export default function Scene4() {
       const rect = scene.getBoundingClientRect()
       const touchY = e.touches[0].clientY
       const deltaY = touchStartY - touchY
-      
+
       if (rect.bottom <= window.innerHeight + 10 && deltaY > 0) {
         e.preventDefault()
       }
@@ -86,27 +86,27 @@ export default function Scene4() {
         }
       })
 
-      tl.from(".animate-title", { 
-        y: 50, 
-        opacity: 0, 
-        duration: 1, 
-        ease: "back.out(1.5)" 
+      tl.from(".animate-title", {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "back.out(1.5)"
       })
-      
-      tl.from(imageWrapperRef.current, { 
-        x: -100, 
+
+      tl.from(imageWrapperRef.current, {
+        x: -100,
         rotation: -10,
-        opacity: 0, 
-        duration: 1.2, 
-        ease: "power3.out" 
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out"
       }, "-=0.6")
-      
-      tl.from(inputCardRef.current, { 
-        x: 100, 
+
+      tl.from(inputCardRef.current, {
+        x: 100,
         rotation: 10,
-        opacity: 0, 
-        duration: 1.2, 
-        ease: "power3.out" 
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out"
       }, "-=1")
 
       gsap.to(".parallax-img", {
@@ -141,15 +141,15 @@ export default function Scene4() {
 
   const handleSubmit = () => {
     if (
-      datePart.dd === correctDate.dd && 
-      datePart.mm === correctDate.mm && 
+      datePart.dd === correctDate.dd &&
+      datePart.mm === correctDate.mm &&
       datePart.yyyy === correctDate.yyyy
     ) {
       setStatus("success")
       setIsUnlocked(true)
       unlockScene(4)
       gsap.to(".confetti-dummy", { opacity: 1, scale: 1.2, duration: 0.5 })
-      gsap.fromTo(unlockIndicatorRef.current, 
+      gsap.fromTo(unlockIndicatorRef.current,
         { opacity: 0, y: -10 },
         { opacity: 1, y: 0, duration: 0.5, ease: "back.out(2)" }
       )
@@ -169,7 +169,7 @@ export default function Scene4() {
   }
 
   return (
-    <section 
+    <section
       ref={containerRef}
       className="min-h-screen flex flex-col items-center justify-center bg-[#fdf6f0] px-6 py-12"
     >
@@ -179,13 +179,13 @@ export default function Scene4() {
 
       {/* Grid Cols 2 Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full items-center">
-        
+
         {/* Kolom Kiri: Image */}
         <div ref={imageWrapperRef} className="relative z-10 p-4 bg-white rounded-2xl shadow-xl transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500">
           <div className="overflow-hidden rounded-xl bg-gray-200 aspect-[4/5] relative">
-            <Image 
-              src="/images/mine/4.jpeg" 
-              alt="Our moment" 
+            <Image
+              src="/images/chat.jpeg"
+              alt="Our moment"
               fill
               className="object-cover parallax-img scale-110"
             />
@@ -196,12 +196,12 @@ export default function Scene4() {
         </div>
 
         {/* Kolom Kanan: Input Card */}
-        <div 
+        <div
           ref={inputCardRef}
           className="bg-white p-8 rounded-[2.5rem] shadow-2xl border-2 border-pink-100 flex flex-col items-center"
         >
-          <p className="text-xl font-medium text-gray-600 mb-8">Masukkan Tanggal Jadian Kita:</p>
-          
+          <p className="text-xl font-medium text-gray-600 text-center mb-8">Masukkan Tanggal Pertama Kita Chat WA:</p>
+
           {/* Input 2 Digit 2 Digit */}
           <div className="flex items-center gap-3 mb-8">
             <input

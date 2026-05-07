@@ -50,17 +50,17 @@ const questions = [
     question: "Kalo lagi bad mood, paling suka dibujuk pake apa? 🍫",
     optionA: "Dibelai & dicium",
     optionB: "Dikasih makanan enak",
-    correct: "B",
-    feedbackRight: "Valid! Makanan is the key to your heart 🍕💖",
-    feedbackWrong: "Bohong banget! Kamu mah kalo dikasih makanan langsung luluh 😂"
+    correct: "A",
+    feedbackRight: "Betul! Kamu mah paling demen digituin sama aku 🙈",
+    feedbackWrong: "Maunya sih makanan, tapi paling demen digituin kan? 😜"
   },
   {
     question: "Liburan impian kita berdua? ✈️",
-    optionA: "Jepang",
+    optionA: "Kendari",
     optionB: "Bali",
     correct: "A",
-    feedbackRight: "Benerrr, semoga kita bisa secepatnya ke Jepang bareng yaa! 🌸🎌",
-    feedbackWrong: "Bali juga enak sih, tapi impian utama kita kan Jepang! 🥺"
+    feedbackRight: "Benerrr, semoga kita bisa secepatnya ketemu yaaaa! biar bisa ituu 👉🏻👈🏻",
+    feedbackWrong: "Impian utama kita kan Kendari biar bisa meet up! 🥺"
   },
   {
     question: "Hal yang paling bikin aku salting gara-gara kamu? 🫣",

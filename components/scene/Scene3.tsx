@@ -201,7 +201,18 @@ export default function Scene3() {
       onMouseEnter={() => setHoveredIdx(itemIdx)}
       onClick={() => setLightbox(itemIdx)}
     >
-      <Image src={photos[photoIdx]} alt={`memory-${photoIdx}`} width={400} height={400} className="rounded-sm w-full h-auto pointer-events-none" />
+      {photoIdx === 0 ? (
+        <div className="rounded-sm w-full aspect-[3/4] relative overflow-hidden">
+          <Image 
+            src={photos[photoIdx]} 
+            alt={`memory-${photoIdx}`} 
+            fill 
+            className="object-cover pointer-events-none" 
+          />
+        </div>
+      ) : (
+        <Image src={photos[photoIdx]} alt={`memory-${photoIdx}`} width={400} height={400} className="rounded-sm w-full h-auto pointer-events-none" />
+      )}
     </div>
   )
 
@@ -218,7 +229,8 @@ export default function Scene3() {
       <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-rose-200/40 rounded-full blur-2xl animate-pulse delay-700" />
 
       <div ref={gridRef} className="relative w-full max-w-5xl mx-auto z-20" style={{ perspective: "1000px" }}>
-        <div className="grid grid-cols-3 grid-rows-3 gap-8">
+        {/* Desktop Layout (3x3 Grid) */}
+        <div className="hidden md:grid grid-cols-3 grid-rows-3 gap-8">
           {/* Row 1 */}
           {polaroid(0, 0)}
           {polaroid(1, 1)}
@@ -245,6 +257,23 @@ export default function Scene3() {
           <div className="bg-transparent" />
           {polaroid(5, 5)}
           <div className="bg-transparent" />
+        </div>
+
+        {/* Mobile/Tablet Layout (up to md) */}
+        <div className="flex flex-col gap-6 md:hidden">
+          <h2
+            className="text-3xl font-bold text-pink-500 drop-shadow-lg text-center font-serif mb-2"
+          >
+            cantiknya cewekuuu
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {polaroid(0, 0)}
+            {polaroid(1, 1)}
+            {polaroid(2, 2)}
+            {polaroid(3, 3)}
+            {polaroid(4, 4)}
+            {polaroid(5, 5)}
+          </div>
         </div>
       </div>
 

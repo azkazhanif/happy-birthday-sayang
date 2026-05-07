@@ -246,7 +246,7 @@ export default function Scene7() {
             </button>
 
             <h3 className="text-3xl font-bold text-pink-500 mb-6 font-handwriting text-center">
-              Happy Anniversary / Birthday! 🎉
+              Happy Birthday Sayangggg! 🎉
             </h3>
             
             <div className="space-y-4 text-gray-700 font-medium leading-relaxed">
@@ -265,7 +265,7 @@ export default function Scene7() {
             </div>
 
             <div className="mt-8 text-right text-pink-400 font-bold font-handwriting text-xl">
-              - Cowokmu yang paling ganteng
+              - Cowokmu yang paling ganteng anjayy pede gue
             </div>
           </div>
         </div>
