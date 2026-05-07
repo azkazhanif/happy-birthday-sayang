@@ -11,6 +11,8 @@ export default function Scene4() {
   // State untuk masing-masing bagian tanggal
   const [datePart, setDatePart] = useState({ dd: "", mm: "", yyyy: "" })
   const [status, setStatus] = useState("idle") // 'idle' | 'error' | 'success'
+  const [errorMessage, setErrorMessage] = useState("")
+  const [showModal, setShowModal] = useState(false)
 
   const { unlockScene, isSceneUnlocked } = useSceneContext()
   const [isUnlocked, setIsUnlocked] = useState(false)
@@ -140,6 +142,16 @@ export default function Scene4() {
   }
 
   const handleSubmit = () => {
+    if (!datePart.dd || !datePart.mm || !datePart.yyyy || datePart.yyyy.length < 4) {
+      setErrorMessage("Lengkapin dulu dong tanggalnya sayang... 🥺")
+      setStatus("error")
+      gsap.to(inputCardRef.current, {
+        keyframes: [{ x: -10 }, { x: 10 }, { x: -10 }, { x: 10 }, { x: 0 }],
+        duration: 0.4,
+      })
+      return
+    }
+
     if (
       datePart.dd === correctDate.dd &&
       datePart.mm === correctDate.mm &&
@@ -147,6 +159,7 @@ export default function Scene4() {
     ) {
       setStatus("success")
       setIsUnlocked(true)
+      setShowModal(true)
       unlockScene(4)
       gsap.to(".confetti-dummy", { opacity: 1, scale: 1.2, duration: 0.5 })
       gsap.fromTo(unlockIndicatorRef.current,
@@ -155,6 +168,22 @@ export default function Scene4() {
       )
     } else {
       setStatus("error")
+      
+      const inputDateStr = `${datePart.yyyy}-${datePart.mm}-${datePart.dd}`
+      const correctDateStr = `${correctDate.yyyy}-${correctDate.mm}-${correctDate.dd}`
+      const inputDate = new Date(inputDateStr)
+      const targetDate = new Date(correctDateStr)
+
+      if (isNaN(inputDate.getTime())) {
+        setErrorMessage("Format tanggalnya ada yang salah nih sayang 🥺")
+      } else if (inputDate < targetDate) {
+        setErrorMessage("Ketuaan sayang tanggalnya, kejadiannya lebih baru dari itu loh. Masa kamu lupa sih 🥺")
+      } else if (inputDate > targetDate) {
+        setErrorMessage("Kecepetan sayang tanggalnya, kejadiannya lebih lama dari itu loh. Masa kamu lupa sih 🥺")
+      } else {
+        setErrorMessage("Masa kamu lupa sih sayang 🥺")
+      }
+
       gsap.to(inputCardRef.current, {
         keyframes: [
           { x: -10 },
@@ -239,8 +268,8 @@ export default function Scene4() {
           </button>
 
           {status === "error" && (
-            <p className="text-red-500 mt-4 font-semibold animate-bounce">
-              Oops! Salah dikit, coba inget lagi... 😋
+            <p className="text-red-500 mt-4 font-semibold animate-bounce text-center">
+              {errorMessage}
             </p>
           )}
 
@@ -272,6 +301,36 @@ export default function Scene4() {
         >
           <span>🔓</span>
           <span className={poppins.className}>Silahkan scroll ke bawah sayang~ 💕</span>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white p-6 rounded-3xl shadow-2xl max-w-sm w-full flex flex-col items-center relative transform scale-100 transition-transform">
+            <button 
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-pink-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-pink-50"
+            >
+              ✕
+            </button>
+            <div className="w-full aspect-[3/4] relative rounded-2xl overflow-hidden mb-6 mt-2 bg-gray-200">
+              <Image 
+                src="/images/mine/17.jpeg" 
+                alt="Correct memory" 
+                fill 
+                className="object-cover"
+              />
+            </div>
+            <h3 className="text-2xl font-bold text-pink-500 mb-2">PINTERRR! 🥰🎉</h3>
+            <p className="text-gray-600 text-center mb-6">Kamu emang yang terbaik! Lanjut scroll ke bawah ya sayang~ 💕</p>
+            <button 
+              onClick={() => setShowModal(false)}
+              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl shadow-lg transition-colors"
+            >
+              Lanjut 💕
+            </button>
+          </div>
         </div>
       )}
     </section>

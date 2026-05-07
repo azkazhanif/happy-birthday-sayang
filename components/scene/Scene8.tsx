@@ -195,15 +195,15 @@ export default function Scene8() {
           {/* Mobile Polaroids (Stacked horizontally under the card or scrollable) */}
           <div className="flex md:hidden gap-3 overflow-x-auto w-full max-w-sm py-2 px-4 pointer-events-auto z-10 snap-x">
             <div className="polaroid-final shrink-0 bg-white p-2 pb-6 shadow-xl rotate-[-5deg] w-28 snap-center">
-              <img src="/images/mine/11.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 1" />
+              <img src="/images/mine/11.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 1" />
               <p className="text-center text-xs font-handwriting text-gray-600 mt-1">Our First Date</p>
             </div>
             <div className="polaroid-final shrink-0 bg-white p-2 pb-6 shadow-xl rotate-[4deg] w-28 snap-center">
-              <img src="/images/mine/12.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 2" />
+              <img src="/images/mine/12.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 2" />
               <p className="text-center text-xs font-handwriting text-gray-600 mt-1">Sayangku 🥰</p>
             </div>
             <div className="polaroid-final shrink-0 bg-white p-2 pb-6 shadow-xl rotate-[-3deg] w-28 snap-center">
-              <img src="/images/mine/13.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 3" />
+              <img src="/images/mine/13.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 3" />
               <p className="text-center text-xs font-handwriting text-gray-600 mt-1">Miss you</p>
             </div>
             <div className="polaroid-final shrink-0 bg-white p-2 pb-6 shadow-xl rotate-[6deg] w-28 snap-center">
