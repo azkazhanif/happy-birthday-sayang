@@ -162,17 +162,17 @@ export default function Scene8() {
           {/* Desktop Absolute Polaroids */}
           <div className="hidden md:block absolute inset-0 pointer-events-none">
             <div className="polaroid-final absolute top-20 left-32 bg-white p-3 pb-10 shadow-2xl rotate-[-15deg] w-56">
-              <img src="/images/mine/11.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 1" />
+              <img src="/images/mine/11.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 1" />
               <p className="text-center font-handwriting text-gray-600 mt-2">Cantikkuuu</p>
             </div>
 
             <div className="polaroid-final absolute bottom-32 left-40 bg-white p-3 pb-10 shadow-2xl rotate-[10deg] w-56">
-              <img src="/images/mine/12.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 2" />
+              <img src="/images/mine/12.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 2" />
               <p className="text-center font-handwriting text-gray-600 mt-2">Sayangku 🥰</p>
             </div>
 
             <div className="polaroid-final absolute top-24 right-32 bg-white p-3 pb-10 shadow-2xl rotate-[20deg] w-56">
-              <img src="/images/mine/13.webp" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 3" />
+              <img src="/images/mine/13.WEBP" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 3" />
               <p className="text-center font-handwriting text-gray-600 mt-2">Miss you</p>
             </div>
 
@@ -207,7 +207,7 @@ export default function Scene8() {
               <p className="text-center text-xs font-handwriting text-gray-600 mt-1">Miss you</p>
             </div>
             <div className="polaroid-final shrink-0 bg-white p-2 pb-6 shadow-xl rotate-[6deg] w-28 snap-center">
-              <img src="/images/mine/14.heic" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 4" />
+              <img src="/images/mine/14.HEIC" className="w-full aspect-square object-cover bg-gray-200" alt="Memori 4" />
               <p className="text-center text-xs font-handwriting text-gray-600 mt-1">Always You</p>
             </div>
           </div>
